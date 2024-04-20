@@ -3,11 +3,27 @@ import {
   Flex,
   HStack,
   Text,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Link,
+  Button,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { apiUrl, Service} from "@hex-labs/core";
+import axios from "axios";
+
 
 type Props = {
   user: any;
+};
+type Hexathon = {
+  id: number;
+  name: string;
 };
 
 
@@ -24,30 +40,75 @@ type Props = {
 // and the /hexathons endpoint of the hexathons service to get a list of all the hexathons.
 
 const UserCard: React.FC<Props> = (props: Props) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [hexathons, setHexathons] = useState<Hexathon[]>([]);
+
+  const handleOpenModal = () => {
+    setIsOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsOpen(false);
+  };
 
   return (
-    <Box
-    borderWidth="1px"
-    rounded="lg"
-    boxShadow="lg"
-    height="175px"
-    fontWeight="bold"
-    alignItems="center"
-    >
-      <Flex padding="2" flexDirection="column">
-        <HStack align="flex-end" justify="space-between">
-          <Text fontSize='xl'>{`${props.user.name.first} ${props.user.name.last}`}</Text>
-        </HStack>
-        <Text
-          fontSize="sm"
-          fontWeight="semibold"
-          justifyContent="justify"
-          mt="2"
-        >
-          {props.user.email}
-        </Text>
-      </Flex>
-    </Box>
+    <>
+      <Box
+        borderWidth="1px"
+        rounded="lg"
+        boxShadow="lg"
+        height="175px"
+        p="4"
+        onClick={handleOpenModal}
+        cursor="pointer"
+        transition="all 0.3s"
+        _hover={{
+          borderColor: "blue.400",
+        }}
+      >
+        <Flex flexDirection="column" justify="space-between" h="100%">
+          <HStack justify="space-between" mb="2">
+            <Text fontSize="xl" fontWeight="bold">
+              {`${props.user.name.first} ${props.user.name.last}`}
+            </Text>
+          </HStack>
+          <Text fontSize="sm" fontWeight="semibold" color="gray.600">
+            {props.user.email}
+          </Text>
+        </Flex>
+      </Box>
+
+      <Modal isOpen={isOpen} onClose={handleCloseModal} size="md">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>User Info</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text mb="2">
+              <Text as="span" fontWeight="bold">Name:</Text>{" "}
+              {`${props.user.name.first} ${props.user.name.last}`}
+            </Text>
+            <Text mb="2">
+              <Text as="span" fontWeight="bold">Email:</Text> {props.user.email}
+            </Text>
+            <Text mb="2">
+              <Text as="span" fontWeight="bold">Phone Number:</Text>{" "}
+              {props.user.phoneNumber}
+            </Text>
+            <Text>
+              <Text as="span" fontWeight="bold">User ID:</Text> {props.user.userId}
+            </Text>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="purple" mr={3} onClick={handleCloseModal}>
+              Close
+            </Button>
+            <Button variant="ghost">View Hexathons</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 
